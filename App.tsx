@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import LandingScreen from './components/authentication/landing'
+import {Landing} from './components/authentication/landing'
 
 const Stack = createStackNavigator();
 
@@ -11,7 +11,7 @@ export default function App() {
   return (
     <NavigationContainer>
         <Stack.Navigator initialRouteName="Landing">
-          <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false}}/>
+          <Stack.Screen name="Landing" component={Landing} options={{ headerShown: false}}/>
         </Stack.Navigator>
     </NavigationContainer>
   );
