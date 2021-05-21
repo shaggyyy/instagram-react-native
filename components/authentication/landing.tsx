@@ -11,7 +11,7 @@ export const Landing = ({ navigation }) : JSX.Element => {
             </Button>
             <Button
                 title="Login"
-                onPress={() => navigation.navigate("Login")}
+                onPress={() => navigation.navigate("login")}
             >
             </Button>
         </View>

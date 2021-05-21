@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native'
 
 import firebase from 'firebase/app'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import {Landing} from './components/authentication/landing';
-import {register} from './components/register/register';
+import { Landing } from './components/authentication/landing';
+import { register } from './components/register/register';
+import { Login } from './components/login/login';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiNshI_QxsVLHEmdODOnCWifo1WW_deZc",
@@ -17,19 +19,52 @@ const firebaseConfig = {
   measurementId: "G-BBQ86DN0CT"
 };
 
-if(firebase.apps.length === 0) {
+if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig)
 }
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  const [userAuthState, setUserAuthState] = useState({
+    loaded: false,
+    loggedIn: false,
+  })
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        setUserAuthState({
+          loaded: true,
+          loggedIn: false
+        })
+      } else {
+        setUserAuthState({
+          loaded: true,
+          loggedIn: false
+        })
+      }
+    })
+  })
+
   return (
-    <NavigationContainer>
-        <Stack.Navigator initialRouteName="Landing">
-          <Stack.Screen name="Landing" component={Landing} options={{ headerShown: false}}/>
-          <Stack.Screen name="register" component={register}/>
-        </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      { !userAuthState.loaded &&
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <Text>Loading</Text>
+        </View>
+      }
+
+      { (!userAuthState.loggedIn && userAuthState.loaded) &&
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Landing">
+            <Stack.Screen name="Landing" component={Landing} options={{ headerShown: false }} />
+            <Stack.Screen name="register" component={register} />
+            <Stack.Screen name="login" component={Login} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      }
+
+    </>
   );
 }
