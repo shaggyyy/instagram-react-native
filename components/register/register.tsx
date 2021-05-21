@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, Button } from 'react-native'
 
+import firebase from 'firebase'
+
 export const register = () => {
     const [emptyForm, setEmptyForm ] = useState(
         {
@@ -11,11 +13,18 @@ export const register = () => {
     )
 
     const onSignUp = () => {
-
+        firebase.auth().createUserWithEmailAndPassword(emptyForm.email, emptyForm.password)
+        .then((result) => {
+            console.log(result)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     }
 
     return (
         <View>
+            <Text>Enter Your Name</Text>
             <TextInput 
                 placeholder="name"
                 onChangeText={(name) => setEmptyForm({
@@ -24,6 +33,7 @@ export const register = () => {
                     password: emptyForm.password,
                 })}
             />
+            <Text>Enter Your Email</Text>
             <TextInput 
                 placeholder="email"
                 onChangeText={(email) => setEmptyForm({
@@ -32,6 +42,7 @@ export const register = () => {
                     password: emptyForm.password,
                 })}
             />
+            <Text>Enter Your Password</Text>
             <TextInput 
                 placeholder="password"
                 secureTextEntry={true}
