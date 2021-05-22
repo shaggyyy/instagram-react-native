@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native'
 
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers';
+import thunk from 'redux-thunk';
+
 import firebase from 'firebase/app'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,6 +13,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Landing } from './components/authentication/landing';
 import { register } from './components/register/register';
 import { Login } from './components/login/login';
+import { Home } from './components/home/home'
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiNshI_QxsVLHEmdODOnCWifo1WW_deZc",
@@ -20,7 +28,7 @@ const firebaseConfig = {
 };
 
 if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig)
+  firebase.initializeApp(firebaseConfig);
 }
 
 const Stack = createStackNavigator();
@@ -41,7 +49,7 @@ export default function App() {
       } else {
         setUserAuthState({
           loaded: true,
-          loggedIn: false
+          loggedIn: true
         })
       }
     })
@@ -63,6 +71,12 @@ export default function App() {
             <Stack.Screen name="login" component={Login} />
           </Stack.Navigator>
         </NavigationContainer>
+      }
+
+      { (userAuthState.loggedIn) &&
+        <Provider store={store}>
+          <Home />
+        </Provider>
       }
 
     </>

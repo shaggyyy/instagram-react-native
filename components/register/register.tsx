@@ -13,9 +13,15 @@ export const register = () => {
     )
 
     const onSignUp = () => {
-        firebase.auth().createUserWithEmailAndPassword(emptyForm.email, emptyForm.password)
+        const { name, email, password } = emptyForm;
+        firebase.auth().createUserWithEmailAndPassword( email, password )
         .then((result) => {
-            console.log(result)
+            firebase.firestore().collection("user")
+            .doc(firebase.auth().currentUser?.uid)
+            .set({
+                name,
+                email
+            })
         })
         .catch((error) => {
             console.log(error)
