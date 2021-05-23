@@ -15,7 +15,7 @@ import { register } from './components/register/register';
 import { Login } from './components/login/login';
 import { Home } from './components/home/home'
 
-const store = createStore(rootReducer, applyMiddleware(thunk));
+export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiNshI_QxsVLHEmdODOnCWifo1WW_deZc",
