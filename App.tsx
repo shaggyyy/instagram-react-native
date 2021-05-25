@@ -14,6 +14,7 @@ import { Landing } from './components/authentication/landing';
 import { register } from './components/register/register';
 import { Login } from './components/login/login';
 import { Home } from './components/home/home'
+import { addPhoto } from './components/add-photo/add-photo';
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -75,7 +76,12 @@ export default function App() {
 
       { (userAuthState.loggedIn) &&
         <Provider store={store}>
-          <Home />
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="home">
+              <Stack.Screen name="home" component={Home} options={{ headerShown: false }} />
+              <Stack.Screen name="add-photo" component={addPhoto} />
+            </Stack.Navigator>
+          </NavigationContainer>
         </Provider>
       }
 

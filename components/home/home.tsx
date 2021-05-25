@@ -1,9 +1,19 @@
 import firebase from 'firebase';
 import React, { useEffect } from 'react'
-import { View, Text } from 'react-native'
 import { useDispatch } from 'react-redux';
 
-import { store } from '../../App'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { feed } from '../feed/feed';
+import { profile } from '../profile/profile';
+import { addPhoto } from '../add-photo/add-photo';
+import { View } from 'react-native';
+
+const Tab = createBottomTabNavigator();
+
+const emptyScreen = () => {
+  return (null)
+}
 
 export const Home = () => {
   const dispatch = useDispatch();
@@ -20,7 +30,7 @@ export const Home = () => {
           console.log('does not exist')
         }
       })
-      
+
   }
 
   useEffect(() => {
@@ -28,8 +38,34 @@ export const Home = () => {
   }, [dispatch]);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
-      <Text>Welcome To Feed </Text>
-    </View>
+    <Tab.Navigator initialRouteName="feed">
+      <Tab.Screen name="feed" component={feed}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={26} />
+          )
+        }}
+      />
+      <Tab.Screen name="empty-screen" component={emptyScreen}
+        listeners={({ navigation }) => ({
+          tabPress: event => {
+            event.preventDefault();
+            navigation.navigate('add-photo');
+          }
+        })}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="plus-box" color={color} size={26} />
+          )
+        }}
+      />
+      <Tab.Screen name="profle" component={profile}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account-circle" color={color} size={26} />
+          )
+        }}
+      />
+    </Tab.Navigator>
   )
 }
