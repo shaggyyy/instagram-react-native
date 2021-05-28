@@ -19,15 +19,40 @@ export const saveImage = (props) => {
             .child(`post/${firebase.auth().currentUser?.uid}/${Math.random().toString(36)}`)
             .put(blob);
 
-        // TODO: to check about the solution about below error
-        
-        // const taskCompleted = () => {
-        //     task.snapshot.ref.getDownloadURL().then((snapshot) => {
-        //         console.log(snapshot)
-        //     })
-        // }
+        const taskCompleted = () => {
+            task.snapshot.ref.getDownloadURL().then((snapshot) => {
+                savePostData(snapshot);
+                console.log(snapshot)
+            })
+        }
 
-        //task.on("state_changed", taskCompleted);
+        const taskError = () => {
+            // task.snapshot.ref.getDownloadURL().then((snapshot) => {
+            //     console.log(snapshot)
+            // })
+        }
+
+        const taskProgress = () => {
+            // task.snapshot.ref.getDownloadURL().then((snapshot) => {
+            //     console.log(snapshot)
+            // })
+        }
+
+        task.on("state_changed", taskProgress, taskError ,taskCompleted);
+    }
+
+    const savePostData = (downloadUrl: string) => {
+        firebase.firestore()
+            .collection('posts')
+            .doc(firebase.auth().currentUser?.uid)
+            .collection('userPosts')
+            .add({
+                downloadUrl,
+                caption,
+                creationDate: firebase.firestore.FieldValue.serverTimestamp()
+            }).then( (function () {
+                props.navigation.popToTop()
+            }))
     }
 
     return (
