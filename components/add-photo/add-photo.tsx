@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
-export const addPhoto = () => {
+export const addPhoto = ({ navigation }) => {
     const [hasCameraPermission, setHasCameraPermission] = useState(false);
     const [hasGalleryPermission, setHasGalleryPermission] = useState(false);
     const [camera, setCamera] = useState(null)
@@ -53,7 +53,11 @@ export const addPhoto = () => {
         if (!result.cancelled) {
             setImage(result.uri);
         }
-    };
+    }
+
+    const saveImage = () => {
+        navigation.navigate('save-image', {image});
+    }
 
     return (
         <View style={styles.pageContainer}>
@@ -79,6 +83,10 @@ export const addPhoto = () => {
             <Button
                 title='Pick Picture from Galllery'
                 onPress={() => pickImage()}
+            />
+             <Button
+                title='save Picture'
+                onPress={() => saveImage()}
             />
             { image && <Image source={{ uri: image }} style={styles.clickedImage} />}
         </View>
