@@ -15,6 +15,7 @@ import { register } from './components/register/register';
 import { Login } from './components/login/login';
 import { Home } from './components/home/home'
 import { addPhoto } from './components/add-photo/add-photo';
+import { saveImage } from './components/save-image/save-image';
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -80,11 +81,11 @@ export default function App() {
             <Stack.Navigator initialRouteName="home">
               <Stack.Screen name="home" component={Home} options={{ headerShown: false }} />
               <Stack.Screen name="add-photo" component={addPhoto} />
+              <Stack.Screen name="save-image" component={saveImage} options={{ headerShown: true }} />
             </Stack.Navigator>
           </NavigationContainer>
         </Provider>
       }
-
     </>
   );
 }
