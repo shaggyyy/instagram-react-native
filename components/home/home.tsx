@@ -8,6 +8,7 @@ import { feed } from '../feed/feed';
 import { profile } from '../profile/profile';
 import { addPhoto } from '../add-photo/add-photo';
 import { View } from 'react-native';
+import { USER_POSTS_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -25,7 +26,7 @@ export const Home = () => {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          dispatch({ type: 'USER_STATE_CHANGE', currentUser: snapshot.data() })
+          dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() })
         } else {
           console.log('does not exist')
         }
@@ -33,8 +34,28 @@ export const Home = () => {
 
   }
 
+  const fetchUserPosts = () => {
+    firebase.firestore()
+      .collection('posts')
+      .doc(firebase.auth().currentUser?.uid)
+      .collection('userPosts')
+      .orderBy('creationDate', 'asc')
+      .get()
+      .then((snapshot) => {
+        let posts = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const id = doc.id;
+          return { id, ...data}
+        })
+        console.log(posts)
+        dispatch({ type: USER_POSTS_STATE_CHANGE, posts })
+      })
+  }
+
+
   useEffect(() => {
     fetchUser();
+    fetchUserPosts();
   }, [dispatch]);
 
   return (
