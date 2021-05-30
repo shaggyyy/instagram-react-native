@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -9,6 +10,7 @@ import { profile } from '../profile/profile';
 import { addPhoto } from '../add-photo/add-photo';
 import { View } from 'react-native';
 import { USER_POSTS_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants';
+import { store } from '../../App';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -45,13 +47,11 @@ export const Home = () => {
         let posts = snapshot.docs.map((doc) => {
           const data = doc.data();
           const id = doc.id;
-          return { id, ...data}
+          return { id, ...data }
         })
-        console.log(posts)
         dispatch({ type: USER_POSTS_STATE_CHANGE, posts })
       })
   }
-
 
   useEffect(() => {
     fetchUser();
@@ -59,34 +59,36 @@ export const Home = () => {
   }, [dispatch]);
 
   return (
-    <Tab.Navigator initialRouteName="feed" labeled={false}>
-      <Tab.Screen name="Feed" component={feed}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={26} />
-          )
-        }}
-      />
-      <Tab.Screen name="Add Photo" component={emptyScreen}
-        listeners={({ navigation }) => ({
-          tabPress: event => {
-            event.preventDefault();
-            navigation.navigate('add-photo');
-          }
-        })}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="plus-box" color={color} size={26} />
-          )
-        }}
-      />
-      <Tab.Screen name="Profile" component={profile}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-circle" color={color} size={26} />
-          )
-        }}
-      />
-    </Tab.Navigator>
+    <Provider store={store}>
+      <Tab.Navigator initialRouteName="feed" labeled={false}>
+        <Tab.Screen name="Feed" component={feed}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="home" color={color} size={26} />
+            )
+          }}
+        />
+        <Tab.Screen name="Add Photo" component={emptyScreen}
+          listeners={({ navigation }) => ({
+            tabPress: event => {
+              event.preventDefault();
+              navigation.navigate('add-photo');
+            }
+          })}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="plus-box" color={color} size={26} />
+            )
+          }}
+        />
+        <Tab.Screen name="Profile" component={profile}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="account-circle" color={color} size={26} />
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </Provider>
   )
 }
