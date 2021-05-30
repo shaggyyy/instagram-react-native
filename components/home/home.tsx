@@ -11,6 +11,7 @@ import { addPhoto } from '../add-photo/add-photo';
 import { View } from 'react-native';
 import { USER_POSTS_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants';
 import { store } from '../../App';
+import { search } from '../search/search';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -65,6 +66,13 @@ export const Home = () => {
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
+            )
+          }}
+        />
+        <Tab.Screen name="Search" component={search}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="magnify" color={color} size={26} />
             )
           }}
         />
