@@ -1,4 +1,76 @@
 import React, { useEffect, useState } from 'react'
+import { StyleSheet, View, Text, FlatList, Image, Button } from 'react-native'
+
+import firebase from 'firebase'
+require('firebase/firestore')
+
+export const profile = (props) => {
+    const [following, setFollowing] = useState(false)
+
+    const [userPosts, setUserPosts] = useState([])
+    const [user, setUser] = useState(null)
+
+    const fetchUser = () => {
+        firebase.firestore()
+            .collection('user')
+            .doc(props.route.params.uid)
+            .get()
+            .then((snapshot) => {
+                if (snapshot.exists) {
+                    setUser(snapshot.data())
+                    console.log(user)
+                } else {
+                    console.log('does not exist')
+                }
+            })
+
+    }
+
+    const fetchUserPosts = () => {
+        firebase.firestore()
+            .collection('posts')
+            .doc(props.route.params.uid)
+            .collection('userPosts')
+            .orderBy('creationDate', 'asc')
+            .get()
+            .then((snapshot) => {
+                let posts = snapshot.docs.map((doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+                setUserPosts(posts)
+                console.log(userPosts)
+            })
+    }
+
+    useEffect(() => {
+        fetchUser();
+        fetchUserPosts();
+    }, [props.route.params.uid]);
+
+    const onFollow = () => {
+        firebase.firestore()
+        .collection('following')
+        .doc(firebase.auth().currentUser?.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .set({})
+    }
+
+    const onUnfollow = () => {
+        firebase.firestore()
+        .collection('following')
+        .doc(firebase.auth().currentUser?.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .delete()
+    }
+
+    if (!user) {
+        return <View />
+    }
+=======
 import { StyleSheet, View, Text, FlatList, Image } from 'react-native'
 import { useDispatch } from 'react-redux';
 
@@ -61,6 +133,22 @@ export const profile = (props) => {
                 <Text>Profile</Text>
                 <Text>{user?.name}</Text>
                 <Text>{user?.email}</Text>
+
+                {props.route.params.uid !== firebase.auth().currentUser?.uid ? (
+                    <View>
+                        { following ? (
+                            <Button
+                                title="Following"
+                                onPress={() => onUnfollow()}
+                            />
+                        ) : (
+                            <Button
+                                title="Follow"
+                                onPress={() => onFollow()}
+                            />
+                        )}
+                    </View>
+                ) : null}
             </View>
 
             <View style={styles.postContainer}>
@@ -89,7 +177,6 @@ export const profile = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 40,
     },
     containerUserInfo: {
         margin: 20,
