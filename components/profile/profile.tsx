@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList, Image } from 'react-native'
-import { useDispatch } from 'react-redux';
+import { StyleSheet, View, Text, FlatList, Image, Button } from 'react-native'
 
 import firebase from 'firebase'
 require('firebase/firestore')
 
-import { store } from '../../App';
-
 export const profile = (props) => {
-    const dispatch = useDispatch()
-    const state = store.getState()
-    //const currentUser = state.userState.currentUser
-    //const currentUserPosts = state.userState.posts
+    const [following, setFollowing] = useState(false)
 
     const [userPosts, setUserPosts] = useState([])
     const [user, setUser] = useState(null)
@@ -55,12 +49,50 @@ export const profile = (props) => {
         fetchUserPosts();
     }, [props.route.params.uid]);
 
+    const onFollow = () => {
+        firebase.firestore()
+        .collection('following')
+        .doc(firebase.auth().currentUser?.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .set({})
+    }
+
+    const onUnfollow = () => {
+        firebase.firestore()
+        .collection('following')
+        .doc(firebase.auth().currentUser?.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .delete()
+    }
+
+    if (!user) {
+        return <View />
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.containerUserInfo}>
                 <Text>Profile</Text>
                 <Text>{user?.name}</Text>
                 <Text>{user?.email}</Text>
+
+                {props.route.params.uid !== firebase.auth().currentUser?.uid ? (
+                    <View>
+                        { following ? (
+                            <Button
+                                title="Following"
+                                onPress={() => onUnfollow()}
+                            />
+                        ) : (
+                            <Button
+                                title="Follow"
+                                onPress={() => onFollow()}
+                            />
+                        )}
+                    </View>
+                ) : null}
             </View>
 
             <View style={styles.postContainer}>
@@ -89,7 +121,6 @@ export const profile = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 40,
     },
     containerUserInfo: {
         margin: 20,
