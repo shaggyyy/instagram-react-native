@@ -81,6 +81,62 @@ export const profile = (props) => {
     if (!user) {
         return <View />
     }
+=======
+import { StyleSheet, View, Text, FlatList, Image } from 'react-native'
+import { useDispatch } from 'react-redux';
+
+import firebase from 'firebase'
+require('firebase/firestore')
+
+import { store } from '../../App';
+
+export const profile = (props) => {
+    const dispatch = useDispatch()
+    const state = store.getState()
+    //const currentUser = state.userState.currentUser
+    //const currentUserPosts = state.userState.posts
+
+    const [userPosts, setUserPosts] = useState([])
+    const [user, setUser] = useState(null)
+
+    const fetchUser = () => {
+        firebase.firestore()
+            .collection('user')
+            .doc(props.route.params.uid)
+            .get()
+            .then((snapshot) => {
+                if (snapshot.exists) {
+                    setUser(snapshot.data())
+                    console.log(user)
+                } else {
+                    console.log('does not exist')
+                }
+            })
+
+    }
+
+    const fetchUserPosts = () => {
+        firebase.firestore()
+            .collection('posts')
+            .doc(props.route.params.uid)
+            .collection('userPosts')
+            .orderBy('creationDate', 'asc')
+            .get()
+            .then((snapshot) => {
+                let posts = snapshot.docs.map((doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+                setUserPosts(posts)
+                console.log(userPosts)
+            })
+    }
+
+    useEffect(() => {
+        fetchUser();
+        fetchUserPosts();
+    }, [props.route.params.uid]);
 
     return (
         <View style={styles.container}>
