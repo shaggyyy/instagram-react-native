@@ -9,6 +9,7 @@ import { feed } from '../feed/feed';
 import { profile } from '../profile/profile';
 import { store } from '../../App';
 import { search } from '../search/search';
+import { USER_FOLLOWING_STATE_CHANGE } from '../../redux/constants';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -17,6 +18,25 @@ const emptyScreen = () => {
 }
 
 export const Home = () => {
+  const dispatch = useDispatch()
+
+  const fetchFollowingUser = () => {
+    firebase.firestore()
+      .collection('following')
+      .doc(firebase.auth().currentUser?.uid)
+      .collection('userFollowing')
+      .onSnapshot((snapshot) => {
+        let users = snapshot.docs.map((doc) => {
+          const id = doc.id;
+          return id
+        })
+        dispatch({ type: USER_FOLLOWING_STATE_CHANGE, users })
+      })
+  }
+
+  useEffect(() => {
+    fetchFollowingUser();
+  }, [dispatch]);
 
   return (
     <Provider store={store}>
@@ -52,7 +72,7 @@ export const Home = () => {
           listeners={({ navigation }) => ({
             tabPress: event => {
               event.preventDefault();
-              navigation.navigate('Profile', { uid: firebase.auth().currentUser?.uid});
+              navigation.navigate('Profile', { uid: firebase.auth().currentUser?.uid });
             }
           })}
           options={{
