@@ -79,7 +79,7 @@ export default function App() {
         <Provider store={store}>
           <NavigationContainer>
             <Stack.Navigator initialRouteName="home">
-              <Stack.Screen name="home" component={Home} options={{ headerShown: true }} />
+              <Stack.Screen name="home" component={Home} options={{ headerShown: false }} />
               <Stack.Screen name="add-photo" component={addPhoto} />
               <Stack.Screen name="save-image" component={saveImage} options={{ headerShown: true }} />
             </Stack.Navigator>
