@@ -3,13 +3,18 @@ import { StyleSheet, View, Text, FlatList, Image, Button } from 'react-native'
 
 import firebase from 'firebase'
 import { store } from '../../App'
+import { useDispatch } from 'react-redux'
+import { USER_FOLLOWING_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants'
 require('firebase/firestore')
 
 export const profile = (props) => {
     const [following, setFollowing] = useState(false)
 
-    const [userPosts, setUserPosts] = useState([])
     const [user, setUser] = useState(null)
+    const [userPosts, setUserPosts] = useState([])
+    const [followingUsers, setFollowingUsers] = useState([])
+
+    const dispatch = useDispatch()
 
     const fetchUser = () => {
         firebase.firestore()
@@ -18,6 +23,7 @@ export const profile = (props) => {
             .get()
             .then((snapshot) => {
                 if (snapshot.exists) {
+                    dispatch({ type: USER_STATE_CHANGE, user })
                     setUser(snapshot.data())
                 } else {
                     console.log('does not exist')
@@ -39,15 +45,34 @@ export const profile = (props) => {
                     const id = doc.id;
                     return { id, ...data }
                 })
+                dispatch({ type: USER_POSTS_STATE_CHANGE, posts })
                 setUserPosts(posts)
+            })
+    }
+
+    const fetchFollowingUser = () => {
+        firebase.firestore()
+            .collection('following')
+            .doc(firebase.auth().currentUser?.uid)
+            .collection('userFollowing')
+            .onSnapshot((snapshot) => {
+                let users = snapshot.docs.map((doc) => {
+                    const id = doc.id;
+                    return id
+                })
+                if (JSON.stringify(users) !== JSON.stringify(followingUsers)) {
+                    dispatch({ type: USER_FOLLOWING_STATE_CHANGE, users })
+                    setFollowingUsers(users)
+                }
             })
     }
 
     useEffect(() => {
         fetchUser();
         fetchUserPosts();
+        fetchFollowingUser()
         checkIfUserFollowing()
-    }, [props.route.params.uid]);
+    }, [props.route.params.uid, followingUsers]);
 
     const onFollow = () => {
         firebase.firestore()
