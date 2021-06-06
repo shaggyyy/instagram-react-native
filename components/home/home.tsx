@@ -18,26 +18,7 @@ const emptyScreen = () => {
 }
 
 export const Home = () => {
-  const dispatch = useDispatch()
-
-  const fetchFollowingUser = () => {
-    firebase.firestore()
-      .collection('following')
-      .doc(firebase.auth().currentUser?.uid)
-      .collection('userFollowing')
-      .onSnapshot((snapshot) => {
-        let users = snapshot.docs.map((doc) => {
-          const id = doc.id;
-          return id
-        })
-        dispatch({ type: USER_FOLLOWING_STATE_CHANGE, users })
-      })
-  }
-
-  useEffect(() => {
-    fetchFollowingUser();
-  }, [dispatch]);
-
+ 
   return (
     <Provider store={store}>
       <Tab.Navigator initialRouteName="feed" labeled={false}>
