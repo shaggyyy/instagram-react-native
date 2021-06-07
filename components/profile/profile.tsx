@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, FlatList, Image, Button } from 'react-native'
 import firebase from 'firebase'
 import { store } from '../../App'
 import { useDispatch } from 'react-redux'
-import { USER_FOLLOWING_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_SELECTED_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants'
+import { USER_FOLLOWING_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_SELECTED_STATE_CHANGE } from '../../redux/constants'
 require('firebase/firestore')
 
 export const profile = (props) => {
@@ -73,7 +73,6 @@ export const profile = (props) => {
         fetchUserPosts();
         fetchFollowingUser()
         checkIfUserFollowing()
-        console.log(store.getState())
     }, [props.route.params.uid, followingUsers]);
 
     const onFollow = () => {
