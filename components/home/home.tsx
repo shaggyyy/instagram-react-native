@@ -9,7 +9,7 @@ import { feed } from '../feed/feed';
 import { profile } from '../profile/profile';
 import { store } from '../../App';
 import { search } from '../search/search';
-import { USER_FOLLOWING_STATE_CHANGE } from '../../redux/constants';
+import { USER_FOLLOWING_STATE_CHANGE, USER_STATE_CHANGE } from '../../redux/constants';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -18,6 +18,28 @@ const emptyScreen = () => {
 }
 
 export const Home = () => {
+  const dispatch = useDispatch()
+
+    const fetchUser = () => {
+        firebase.firestore()
+            .collection('user')
+            .doc(firebase.auth().currentUser?.uid)
+            .get()
+            .then((snapshot) => {
+                if (snapshot.exists) {
+                    const user = snapshot.data()
+                    dispatch({ type: USER_STATE_CHANGE, currentUser: user })
+                    setUser(snapshot.data())
+                } else {
+                    console.log('does not exist')
+                }
+            })
+    }
+
+    useEffect(() => {
+        fetchUser();
+    }, [dispatch]);
+
  
   return (
     <Provider store={store}>
